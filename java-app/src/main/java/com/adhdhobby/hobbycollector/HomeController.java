@@ -10,4 +10,19 @@ public class HomeController {
     public String home() {
         return "ADHD Hobby Collector is running.";
     }
+
+    @GetMapping("/hobbies")
+    public String hobbies() {
+        return """
+                Hobbies:
+                - Knitting
+                - Pottery
+                - Coding
+                - Skateboarding
+                - Gardening
+                - Music Production
+                - Guitar
+                - Cooking
+                """;
+    }
 }
