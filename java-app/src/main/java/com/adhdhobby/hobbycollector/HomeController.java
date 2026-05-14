@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class HomeController {
@@ -11,6 +12,23 @@ public class HomeController {
     @GetMapping("/")
     public String home() {
         return "ADHD Hobby Collector is running.";
+    }
+
+    @GetMapping("/summary")
+    public Map<String, Object> summary() {
+        return Map.of(
+                "appName", "ADHD Hobby Collector",
+                "hobbyCount", hobbies().size(),
+                "projectCount", projects().size(),
+                "supplyCount", supplies().size(),
+                "availableEndpoints", List.of(
+                        "/",
+                        "/summary",
+                        "/hobbies",
+                        "/projects",
+                        "/supplies"
+                )
+        );
     }
 
     @GetMapping("/hobbies")
