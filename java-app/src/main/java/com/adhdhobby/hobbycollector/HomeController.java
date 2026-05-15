@@ -24,10 +24,32 @@ public class HomeController {
                 "availableEndpoints", List.of(
                         "/",
                         "/summary",
+                        "/summary/projects-by-status",
                         "/hobbies",
                         "/projects",
                         "/supplies"
                 )
+        );
+    }
+
+    @GetMapping("/summary/projects-by-status")
+    public Map<String, Long> projectsByStatus() {
+        long startedCount = projects().stream()
+                .filter(project -> project.getStatus().equals("Started"))
+                .count();
+
+        long finishedCount = projects().stream()
+                .filter(project -> project.getStatus().equals("Finished"))
+                .count();
+
+        long abandonedCount = projects().stream()
+                .filter(project -> project.getStatus().equals("Abandoned"))
+                .count();
+
+        return Map.of(
+                "started", startedCount,
+                "finished", finishedCount,
+                "abandoned", abandonedCount
         );
     }
 
