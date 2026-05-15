@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class HomeController {
@@ -27,6 +28,7 @@ public class HomeController {
                         "/summary",
                         "/summary/projects-by-status",
                         "/summary/spending",
+                        "/summary/spending-by-hobby",
                         "/hobbies",
                         "/projects",
                         "/supplies"
@@ -87,6 +89,21 @@ public class HomeController {
                 "averageSupplyCost", averageSupplyCost,
                 "mostExpensiveSupply", mostExpensiveSupply
         );
+    }
+
+    @GetMapping("/summary/spending-by-hobby")
+    public Map<String, Double> spendingByHobby() {
+        Map<Integer, String> hobbyNamesById = hobbies().stream()
+                .collect(Collectors.toMap(
+                        Hobby::getId,
+                        Hobby::getName
+                ));
+
+        return supplies().stream()
+                .collect(Collectors.groupingBy(
+                        supply -> hobbyNamesById.get(supply.getHobbyId()),
+                        Collectors.summingDouble(Supply::getCost)
+                ));
     }
 
     @GetMapping("/hobbies")
