@@ -3,6 +3,7 @@ package com.adhdhobby.hobbycollector;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ public class HomeController {
                         "/",
                         "/summary",
                         "/summary/projects-by-status",
+                        "/summary/spending",
                         "/hobbies",
                         "/projects",
                         "/supplies"
@@ -50,6 +52,40 @@ public class HomeController {
                 "started", startedCount,
                 "finished", finishedCount,
                 "abandoned", abandonedCount
+        );
+    }
+
+    @GetMapping("/summary/spending")
+    public Map<String, Object> spendingSummary() {
+        double totalSpent = supplies().stream()
+                .mapToDouble(Supply::getCost)
+                .sum();
+
+        double essentialSpent = supplies().stream()
+                .filter(Supply::isEssential)
+                .mapToDouble(Supply::getCost)
+                .sum();
+
+        double nonEssentialSpent = supplies().stream()
+                .filter(supply -> !supply.isEssential())
+                .mapToDouble(Supply::getCost)
+                .sum();
+
+        double averageSupplyCost = supplies().stream()
+                .mapToDouble(Supply::getCost)
+                .average()
+                .orElse(0);
+
+        Supply mostExpensiveSupply = supplies().stream()
+                .max(Comparator.comparingDouble(Supply::getCost))
+                .orElse(null);
+
+        return Map.of(
+                "totalSpent", totalSpent,
+                "essentialSpent", essentialSpent,
+                "nonEssentialSpent", nonEssentialSpent,
+                "averageSupplyCost", averageSupplyCost,
+                "mostExpensiveSupply", mostExpensiveSupply
         );
     }
 
