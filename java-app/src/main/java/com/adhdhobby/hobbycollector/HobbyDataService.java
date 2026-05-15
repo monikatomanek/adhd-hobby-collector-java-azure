@@ -8,9 +8,11 @@ import java.util.List;
 public class HobbyDataService {
 
     private final HobbyRepository hobbyRepository;
+    private final SupplyRepository SupplyRepository;
 
-    public HobbyDataService(HobbyRepository hobbyRepository) {
+    public HobbyDataService(HobbyRepository hobbyRepository, SupplyRepository supplyRepository) {
         this.hobbyRepository = hobbyRepository;
+        this.SupplyRepository = SupplyRepository;
     }
 
     public List<Hobby> getHobbies() {
@@ -31,23 +33,6 @@ public class HobbyDataService {
     }
 
     public List<Supply> getSupplies() {
-        return List.of(
-                new Supply(1, 1, "Yarn", 12.50, true, "Material"),
-                new Supply(2, 1, "Knitting Needles", 8.00, true, "Tool"),
-                new Supply(3, 2, "Clay", 20.00, true, "Material"),
-                new Supply(4, 2, "Glaze Paints", 15.00, false, "Consumable"),
-                new Supply(5, 3, "Laptop", 800.00, true, "Tool"),
-                new Supply(6, 3, "Energy Drinks", 5.00, false, "Consumable"),
-                new Supply(7, 4, "Skateboard", 120.00, true, "Tool"),
-                new Supply(8, 4, "Helmet", 35.00, true, "Tool"),
-                new Supply(9, 5, "Garden Gloves", 10.00, true, "Tool"),
-                new Supply(10, 5, "Shovel", 25.00, true, "Tool"),
-                new Supply(11, 6, "MIDI Keyboard", 150.00, true, "Tool"),
-                new Supply(12, 6, "Headphones", 90.00, true, "Tool"),
-                new Supply(13, 7, "Acoustic Guitar", 200.00, true, "Tool"),
-                new Supply(14, 7, "Guitar Picks", 5.00, false, "Consumable"),
-                new Supply(15, 8, "Flour", 2.50, true, "Material"),
-                new Supply(16, 8, "Mixing Bowl", 12.00, true, "Tool")
-        );
+        return SupplyRepository.findAll();
     }
 }
