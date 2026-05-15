@@ -7,17 +7,14 @@ import java.util.List;
 @Service
 public class HobbyDataService {
 
+    private final HobbyRepository hobbyRepository;
+
+    public HobbyDataService(HobbyRepository hobbyRepository) {
+        this.hobbyRepository = hobbyRepository;
+    }
+
     public List<Hobby> getHobbies() {
-        return List.of(
-                new Hobby(1, "Knitting", "Craft", "Beginner"),
-                new Hobby(2, "Pottery", "Art", "Beginner"),
-                new Hobby(3, "Coding", "Tech", "Intermediate"),
-                new Hobby(4, "Skateboarding", "Sport", "Beginner"),
-                new Hobby(5, "Gardening", "Outdoors", "Intermediate"),
-                new Hobby(6, "Music Production", "Music", "Intermediate"),
-                new Hobby(7, "Guitar", "Music", "Beginner"),
-                new Hobby(8, "Cooking", "Lifestyle", "Beginner")
-        );
+        return hobbyRepository.findAll();
     }
 
     public List<HobbyProject> getProjects() {
