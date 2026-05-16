@@ -33,4 +33,20 @@ public class ProjectRepository {
                 )
         );
     }
+
+    public int add(ProjectRequest request) {
+        String sql = """
+                INSERT INTO Projects (hobby_id, project_name, status, notes, started_date)
+                VALUES (?, ?, ?, ?, ?)
+                """;
+
+        return jdbcTemplate.update(
+                sql,
+                request.getHobbyId(),
+                request.getProjectName(),
+                request.getStatus(),
+                request.getNotes(),
+                request.getStartedDate()
+        );
+    }
 }

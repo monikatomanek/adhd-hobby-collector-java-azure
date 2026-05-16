@@ -1,6 +1,8 @@
 package com.adhdhobby.hobbycollector;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Comparator;
@@ -120,6 +122,16 @@ public class HomeController {
     @GetMapping("/projects")
     public List<HobbyProject> projects() {
         return hobbyDataService.getProjects();
+    }
+
+    @PostMapping("/projects")
+    public Map<String, Object> addProject(@RequestBody ProjectRequest request) {
+        int rowsAdded = hobbyDataService.addProject(request);
+
+        return Map.of(
+                "message", "Project added successfully",
+                "rowsAdded", rowsAdded
+        );
     }
 
     @GetMapping("/supplies")

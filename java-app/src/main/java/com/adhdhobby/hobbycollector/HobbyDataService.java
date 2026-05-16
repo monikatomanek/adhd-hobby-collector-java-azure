@@ -29,6 +29,10 @@ public class HobbyDataService {
         return projectRepository.findAll();
     }
 
+    public int addProject(ProjectRequest request) {
+        return projectRepository.add(request);
+    }
+
     public List<Supply> getSupplies() {
         return supplyRepository.findAll();
     }
