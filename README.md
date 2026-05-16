@@ -1,16 +1,32 @@
 # ADHD Hobby Collector
 
-A Java and Azure project for tracking hobbies, projects, supplies, costs, and interest patterns.
+A Java Spring Boot REST API for tracking hobbies, projects, supplies, costs, and project status.
 
-## Current idea
+The project models how someone might explore many hobbies, buy supplies, start projects, finish some, and abandon others.
 
-People with ADHD often explore many hobbies with lots of energy, but may shift interests quickly.
+## Current status
 
-This project tracks hobbies, projects, project status, supplies, costs, motivation level, and abandoned or finished projects.
+The backend API is working locally with a MySQL database.
 
-## Planned tools
+## Tools used
 
 - Java
+- Spring Boot
+- Maven
 - MySQL
-- Azure SQL Database
-- Azure App Service
+- GitHub
+- Visual Studio Code
+
+## Database
+
+The database stores:
+
+- hobbies
+- projects
+- supplies
+- archived/deleted projects
+
+The SQL setup script is in:
+
+```text
+database/setup.sql
