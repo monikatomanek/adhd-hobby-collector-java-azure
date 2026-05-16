@@ -49,4 +49,18 @@ public class ProjectRepository {
                 request.getStartedDate()
         );
     }
+
+    public int updateStatus(int projectId, StatusUpdateRequest request) {
+        String sql = """
+                UPDATE Projects
+                SET status = ?
+                WHERE project_id = ?
+                """;
+
+        return jdbcTemplate.update(
+                sql,
+                request.getStatus(),
+                projectId
+        );
+    }
 }

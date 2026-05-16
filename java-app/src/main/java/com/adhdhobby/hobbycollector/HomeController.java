@@ -1,7 +1,9 @@
 package com.adhdhobby.hobbycollector;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -131,6 +133,19 @@ public class HomeController {
         return Map.of(
                 "message", "Project added successfully",
                 "rowsAdded", rowsAdded
+        );
+    }
+
+    @PutMapping("/projects/{id}/status")
+    public Map<String, Object> updateProjectStatus(
+            @PathVariable int id,
+            @RequestBody StatusUpdateRequest request
+    ) {
+        int rowsUpdated = hobbyDataService.updateProjectStatus(id, request);
+
+        return Map.of(
+                "message", "Project status updated successfully",
+                "rowsUpdated", rowsUpdated
         );
     }
 
