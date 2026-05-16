@@ -34,6 +34,27 @@ public class ProjectRepository {
         );
     }
 
+    public List<DeletedProject> findArchivedProjects() {
+        String sql = """
+                SELECT deleted_id, project_id, hobby_id, project_name, status, notes, started_date, deleted_date
+                FROM DeletedProjects
+                ORDER BY deleted_id
+                """;
+
+        return jdbcTemplate.query(sql, (resultSet, rowNumber) ->
+                new DeletedProject(
+                        resultSet.getInt("deleted_id"),
+                        resultSet.getInt("project_id"),
+                        resultSet.getInt("hobby_id"),
+                        resultSet.getString("project_name"),
+                        resultSet.getString("status"),
+                        resultSet.getString("notes"),
+                        resultSet.getDate("started_date").toString(),
+                        resultSet.getDate("deleted_date").toString()
+                )
+        );
+    }
+
     public int add(ProjectRequest request) {
         String sql = """
                 INSERT INTO Projects (hobby_id, project_name, status, notes, started_date)

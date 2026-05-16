@@ -29,6 +29,10 @@ public class HobbyDataService {
         return projectRepository.findAll();
     }
 
+    public List<DeletedProject> getArchivedProjects() {
+        return projectRepository.findArchivedProjects();
+    }
+
     public int addProject(ProjectRequest request) {
         return projectRepository.add(request);
     }

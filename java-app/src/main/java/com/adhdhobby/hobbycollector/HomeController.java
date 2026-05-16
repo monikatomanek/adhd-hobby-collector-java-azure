@@ -33,6 +33,7 @@ public class HomeController {
                 "appName", "ADHD Hobby Collector",
                 "hobbyCount", hobbies().size(),
                 "projectCount", projects().size(),
+                "archivedProjectCount", archivedProjects().size(),
                 "supplyCount", supplies().size(),
                 "availableEndpoints", List.of(
                         "/",
@@ -42,6 +43,7 @@ public class HomeController {
                         "/summary/spending-by-hobby",
                         "/hobbies",
                         "/projects",
+                        "/projects/archived",
                         "/supplies"
                 )
         );
@@ -125,6 +127,11 @@ public class HomeController {
     @GetMapping("/projects")
     public List<HobbyProject> projects() {
         return hobbyDataService.getProjects();
+    }
+
+    @GetMapping("/projects/archived")
+    public List<DeletedProject> archivedProjects() {
+        return hobbyDataService.getArchivedProjects();
     }
 
     @PostMapping("/projects")
