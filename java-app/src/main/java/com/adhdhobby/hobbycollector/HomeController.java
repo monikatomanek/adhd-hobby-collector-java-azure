@@ -1,5 +1,6 @@
 package com.adhdhobby.hobbycollector;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -146,6 +147,16 @@ public class HomeController {
         return Map.of(
                 "message", "Project status updated successfully",
                 "rowsUpdated", rowsUpdated
+        );
+    }
+
+    @DeleteMapping("/projects/{id}")
+    public Map<String, Object> archiveProject(@PathVariable int id) {
+        int rowsDeleted = hobbyDataService.archiveProject(id);
+
+        return Map.of(
+                "message", rowsDeleted > 0 ? "Project archived successfully" : "Project not found",
+                "rowsDeleted", rowsDeleted
         );
     }
 

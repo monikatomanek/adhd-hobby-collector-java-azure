@@ -63,4 +63,26 @@ public class ProjectRepository {
                 projectId
         );
     }
+
+    public int archiveProject(int projectId) {
+        String archiveSql = """
+                INSERT INTO DeletedProjects (project_id, hobby_id, project_name, status, notes, started_date)
+                SELECT project_id, hobby_id, project_name, status, notes, started_date
+                FROM Projects
+                WHERE project_id = ?
+                """;
+
+        String deleteSql = """
+                DELETE FROM Projects
+                WHERE project_id = ?
+                """;
+
+        int archivedRows = jdbcTemplate.update(archiveSql, projectId);
+
+        if (archivedRows == 0) {
+            return 0;
+        }
+
+        return jdbcTemplate.update(deleteSql, projectId);
+    }
 }

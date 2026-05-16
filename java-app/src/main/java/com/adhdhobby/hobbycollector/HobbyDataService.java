@@ -37,6 +37,10 @@ public class HobbyDataService {
         return projectRepository.updateStatus(projectId, request);
     }
 
+    public int archiveProject(int projectId) {
+        return projectRepository.archiveProject(projectId);
+    }
+
     public List<Supply> getSupplies() {
         return supplyRepository.findAll();
     }
