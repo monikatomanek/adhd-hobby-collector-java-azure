@@ -12,8 +12,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
+@CrossOrigin(origins = "https://monikatomanek.github.io")
 public class HomeController {
 
     private final HobbyDataService hobbyDataService;
