@@ -15,13 +15,10 @@
             --accent-dark: #5b21b6;
             --accent-soft: #ede9fe;
             --accent-soft-text: #5b21b6;
-            --pink: #db2777;
             --pink-soft: #fce7f3;
             --pink-text: #9d174d;
-            --gold: #d97706;
             --gold-soft: #fef3c7;
             --gold-text: #92400e;
-            --green: #059669;
             --green-soft: #d1fae5;
             --green-text: #065f46;
             --danger-soft: #fee2e2;
@@ -99,6 +96,17 @@
             line-height: 1.5;
         }
 
+        .notice {
+            margin-top: 18px;
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            color: var(--accent-dark);
+            font-weight: 800;
+            min-height: 40px;
+        }
+
         main {
             max-width: 1150px;
             margin: 0 auto;
@@ -155,6 +163,12 @@
         button:hover {
             background: #ddd6fe;
             transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: wait;
+            transform: none;
         }
 
         button.secondary {
@@ -302,6 +316,7 @@
     <p class="subtitle">
         Track hobbies, unfinished projects, supplies, spending, and the grand human tradition of starting something enthusiastically and then abandoning it beside a pile of receipts.
     </p>
+    <div id="notice" class="notice">Ready.</div>
 </header>
 
 <main>
@@ -367,6 +382,30 @@
         return safeText(status).replace(/\s+/g, "");
     }
 
+    function setNotice(message) {
+        document.getElementById("notice").textContent = message;
+    }
+
+    function setButtonsDisabled(disabled) {
+        document.querySelectorAll("button").forEach(button => {
+            button.disabled = disabled;
+        });
+    }
+
+    async function runAction(message, action) {
+        try {
+            setButtonsDisabled(true);
+            setNotice(message);
+            await action();
+            setNotice("Done.");
+        } catch (error) {
+            console.error(error);
+            setNotice("Something went wrong. Open Console if the chaos continues.");
+        } finally {
+            setButtonsDisabled(false);
+        }
+    }
+
     async function loadHobbies() {
         const container = document.getElementById("hobbies");
         container.innerHTML = "Loading hobbies...";
@@ -400,61 +439,74 @@
                 <div class="meta">Project ID: ${project.id}</div>
 
                 <div class="actions">
-                    <button class="started" onclick="updateStatus(${project.id}, 'Started')">Started</button>
-                    <button class="finished" onclick="updateStatus(${project.id}, 'Finished')">Finished</button>
-                    <button class="secondary" onclick="updateStatus(${project.id}, 'Abandoned')">Abandoned</button>
-                    <button class="danger" onclick="archiveProject(${project.id})">Archive</button>
+                    <button class="started" onclick="updateStatus(${project.id}, 'Started')">Change to Started</button>
+                    <button class="finished" onclick="updateStatus(${project.id}, 'Finished')">Change to Finished</button>
+                    <button class="secondary" onclick="updateStatus(${project.id}, 'Abandoned')">Change to Abandoned</button>
+                    <button class="danger" onclick="archiveProject(${project.id}, '${safeText(project.projectName).replace(/'/g, "\\'")}')">Archive project</button>
                 </div>
             </div>
         `).join("");
     }
 
     async function addProject() {
-        const project = {
-            hobbyId: Number(document.getElementById("hobbyId").value),
-            projectName: document.getElementById("projectName").value,
-            status: document.getElementById("status").value,
-            notes: document.getElementById("notes").value,
-            startedDate: document.getElementById("startedDate").value
-        };
+        await runAction("Adding project...", async () => {
+            const project = {
+                hobbyId: Number(document.getElementById("hobbyId").value),
+                projectName: document.getElementById("projectName").value,
+                status: document.getElementById("status").value,
+                notes: document.getElementById("notes").value,
+                startedDate: document.getElementById("startedDate").value
+            };
 
-        const response = await fetch(`${API_BASE}/projects`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(project)
+            const response = await fetch(`${API_BASE}/projects`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(project)
+            });
+
+            const result = await response.json();
+            document.getElementById("addProjectMessage").textContent = result.message || "Project added.";
+
+            document.getElementById("projectName").value = "";
+            document.getElementById("notes").value = "";
+            document.getElementById("startedDate").value = "";
+
+            await loadProjects();
         });
-
-        const result = await response.json();
-        document.getElementById("addProjectMessage").textContent = result.message || "Project added.";
-
-        document.getElementById("projectName").value = "";
-        document.getElementById("notes").value = "";
-        document.getElementById("startedDate").value = "";
-
-        loadProjects();
     }
 
     async function updateStatus(projectId, status) {
-        await fetch(`${API_BASE}/projects/${projectId}/status`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ status })
-        });
+        await runAction(`Changing project ${projectId} to ${status}...`, async () => {
+            await fetch(`${API_BASE}/projects/${projectId}/status`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status })
+            });
 
-        loadProjects();
+            await loadProjects();
+        });
     }
 
-    async function archiveProject(projectId) {
-        await fetch(`${API_BASE}/projects/${projectId}`, {
-            method: "DELETE"
-        });
+    async function archiveProject(projectId, projectName) {
+        const confirmed = confirm(`Archive "${projectName}"? This will move it out of active projects.`);
 
-        loadProjects();
-        loadArchivedProjects();
+        if (!confirmed) {
+            setNotice("Archive cancelled.");
+            return;
+        }
+
+        await runAction(`Archiving project ${projectId}...`, async () => {
+            await fetch(`${API_BASE}/projects/${projectId}`, {
+                method: "DELETE"
+            });
+
+            await loadProjects();
+            await loadArchivedProjects();
+        });
     }
 
     async function loadArchivedProjects() {
