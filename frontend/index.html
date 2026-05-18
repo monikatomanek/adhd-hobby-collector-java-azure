@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ADHD Hobby Collector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f6f4f0;
+            color: #222;
+        }
 
+        h1, h2 {
+            color: #333;
+        }
+
+        section {
+            background: white;
+            padding: 18px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        button {
+            padding: 8px 12px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        input, select, textarea {
+            display: block;
+            width: 100%;
+            max-width: 500px;
+            margin: 8px 0;
+            padding: 8px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .small {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>ADHD Hobby Collector</h1>
+
+<section>
+    <h2>Hobbies</h2>
+    <button onclick="loadHobbies()">Load hobbies</button>
+    <div id="hobbies"></div>
+</section>
+
+<section>
+    <h2>Projects</h2>
+    <button onclick="loadProjects()">Load projects</button>
+    <div id="projects"></div>
+</section>
+
+<section>
+    <h2>Add project</h2>
+
+    <input id="hobbyId" type="number" placeholder="Hobby ID">
+    <input id="projectName" type="text" placeholder="Project name">
+
+    <select id="status">
+        <option value="Started">Started</option>
+        <option value="Finished">Finished</option>
+        <option value="Abandoned">Abandoned</option>
+    </select>
+
+    <textarea id="notes" placeholder="Notes"></textarea>
+    <input id="startedDate" type="date">
+
+    <button onclick="addProject()">Add project</button>
+    <p id="addProjectMessage"></p>
+</section>
+
+<section>
+    <h2>Archived projects</h2>
+    <button onclick="loadArchivedProjects()">Load archived projects</button>
+    <div id="archivedProjects"></div>
+</section>
+
+<script>
+    const API_BASE = "https://adhd-hobby-api.onrender.com";
+
+    async function loadHobbies() {
+        const response = await fetch(`${API_BASE}/hobbies`);
+        const hobbies = await response.json();
+
+        document.getElementById("hobbies").innerHTML = hobbies.map(hobby => `
+            <div class="card">
+                <strong>${hobby.name}</strong>
+                <div class="small">Category: ${hobby.category}</div>
+                <div class="small">Skill level: ${hobby.skillLevel}</div>
+                <div class="small">ID: ${hobby.id}</div>
+            </div>
+        `).join("");
+    }
+
+    async function loadProjects() {
+        const response = await fetch(`${API_BASE}/projects`);
+        const projects = await response.json();
+
+        document.getElementById("projects").innerHTML = projects.map(project => `
+            <div class="card">
+                <strong>${project.projectName}</strong>
+                <div>Status: ${project.status}</div>
+                <div class="small">Started: ${project.startedDate}</div>
+                <div class="small">Notes: ${project.notes}</div>
+                <div class="small">Project ID: ${project.id}</div>
+
+                <button onclick="updateStatus(${project.id}, 'Started')">Mark Started</button>
+                <button onclick="updateStatus(${project.id}, 'Finished')">Mark Finished</button>
+                <button onclick="updateStatus(${project.id}, 'Abandoned')">Mark Abandoned</button>
+                <button onclick="archiveProject(${project.id})">Archive</button>
+            </div>
+        `).join("");
+    }
+
+    async function addProject() {
+        const project = {
+            hobbyId: Number(document.getElementById("hobbyId").value),
+            projectName: document.getElementById("projectName").value,
+            status: document.getElementById("status").value,
+            notes: document.getElementById("notes").value,
+            startedDate: document.getElementById("startedDate").value
+        };
+
+        const response = await fetch(`${API_BASE}/projects`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(project)
+        });
+
+        const result = await response.json();
+        document.getElementById("addProjectMessage").textContent = result.message;
+
+        loadProjects();
+    }
+
+    async function updateStatus(projectId, status) {
+        await fetch(`${API_BASE}/projects/${projectId}/status`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ status })
+        });
+
+        loadProjects();
+    }
+
+    async function archiveProject(projectId) {
+        await fetch(`${API_BASE}/projects/${projectId}`, {
+            method: "DELETE"
+        });
+
+        loadProjects();
+        loadArchivedProjects();
+    }
+
+    async function loadArchivedProjects() {
+        const response = await fetch(`${API_BASE}/projects/archived`);
+        const projects = await response.json();
+
+        document.getElementById("archivedProjects").innerHTML = projects.map(project => `
+            <div class="card">
+                <strong>${project.projectName}</strong>
+                <div>Status: ${project.status}</div>
+                <div class="small">Started: ${project.startedDate}</div>
+                <div class="small">Deleted: ${project.deletedDate}</div>
+                <div class="small">Notes: ${project.notes}</div>
+            </div>
+        `).join("");
+    }
+
+    loadHobbies();
+    loadProjects();
+</script>
+
+</body>
+</html>
