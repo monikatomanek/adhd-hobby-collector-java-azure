@@ -2,129 +2,301 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADHD Hobby Collector</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background: #f6f4f0;
-            color: #222;
+        :root {
+            --bg: #f4efe7;
+            --card: #fffaf3;
+            --card-strong: #ffffff;
+            --text: #1f2933;
+            --muted: #697386;
+            --accent: #7c3aed;
+            --accent-dark: #5b21b6;
+            --danger: #dc2626;
+            --border: #eadfd0;
+            --shadow: 0 18px 45px rgba(44, 34, 23, 0.12);
         }
 
-        h1, h2 {
-            color: #333;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, #fce7f3 0, transparent 30%),
+                radial-gradient(circle at top right, #ddd6fe 0, transparent 28%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            padding: 48px 28px 28px;
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(36px, 5vw, 64px);
+            letter-spacing: -1.8px;
+        }
+
+        .subtitle {
+            margin-top: 12px;
+            max-width: 680px;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        main {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 0 28px 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 22px;
+        }
+
+        @media (min-width: 900px) {
+            .grid.two {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         section {
-            background: white;
-            padding: 18px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: rgba(255, 250, 243, 0.88);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: -0.5px;
         }
 
         button {
-            padding: 8px 12px;
-            margin: 5px 0;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
             cursor: pointer;
+            color: white;
+            background: var(--accent);
+            transition: 0.18s ease;
+        }
+
+        button:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: #111827;
+        }
+
+        button.danger {
+            background: var(--danger);
         }
 
         input, select, textarea {
-            display: block;
             width: 100%;
-            max-width: 500px;
             margin: 8px 0;
-            padding: 8px;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            font: inherit;
+            background: var(--card-strong);
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .cards {
+            display: grid;
+            gap: 12px;
         }
 
         .card {
-            border: 1px solid #ddd;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            background: #fafafa;
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 18px;
+            background: var(--card-strong);
         }
 
-        .small {
-            color: #666;
+        .card-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .meta {
+            color: var(--muted);
             font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status {
+            display: inline-block;
+            margin: 8px 0;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #ede9fe;
+            color: #5b21b6;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-weight: 700;
+            color: var(--accent-dark);
+        }
+
+        .loading {
+            color: var(--muted);
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-<h1>ADHD Hobby Collector</h1>
+<header>
+    <h1>ADHD Hobby Collector</h1>
+    <p class="subtitle">
+        Track hobbies, unfinished projects, supplies, spending, and the grand human tradition of starting something enthusiastically and then abandoning it beside a pile of receipts.
+    </p>
+</header>
 
-<section>
-    <h2>Hobbies</h2>
-    <button onclick="loadHobbies()">Load hobbies</button>
-    <div id="hobbies"></div>
-</section>
+<main>
+    <div class="grid two">
+        <section>
+            <div class="section-header">
+                <h2>Hobbies</h2>
+                <button onclick="loadHobbies()">Refresh</button>
+            </div>
+            <div id="hobbies" class="cards loading">Loading hobbies...</div>
+        </section>
 
-<section>
-    <h2>Projects</h2>
-    <button onclick="loadProjects()">Load projects</button>
-    <div id="projects"></div>
-</section>
+        <section>
+            <div class="section-header">
+                <h2>Archived projects</h2>
+                <button onclick="loadArchivedProjects()">Refresh</button>
+            </div>
+            <div id="archivedProjects" class="cards loading">Loading archived projects...</div>
+        </section>
+    </div>
 
-<section>
-    <h2>Add project</h2>
+    <div class="grid" style="margin-top: 22px;">
+        <section>
+            <div class="section-header">
+                <h2>Projects</h2>
+                <button onclick="loadProjects()">Refresh</button>
+            </div>
+            <div id="projects" class="cards loading">Loading projects...</div>
+        </section>
 
-    <input id="hobbyId" type="number" placeholder="Hobby ID">
-    <input id="projectName" type="text" placeholder="Project name">
+        <section>
+            <div class="section-header">
+                <h2>Add project</h2>
+            </div>
 
-    <select id="status">
-        <option value="Started">Started</option>
-        <option value="Finished">Finished</option>
-        <option value="Abandoned">Abandoned</option>
-    </select>
+            <div class="form-grid">
+                <input id="hobbyId" type="number" placeholder="Hobby ID">
+                <input id="projectName" type="text" placeholder="Project name">
 
-    <textarea id="notes" placeholder="Notes"></textarea>
-    <input id="startedDate" type="date">
+                <select id="status">
+                    <option value="Started">Started</option>
+                    <option value="Finished">Finished</option>
+                    <option value="Abandoned">Abandoned</option>
+                </select>
 
-    <button onclick="addProject()">Add project</button>
-    <p id="addProjectMessage"></p>
-</section>
-
-<section>
-    <h2>Archived projects</h2>
-    <button onclick="loadArchivedProjects()">Load archived projects</button>
-    <div id="archivedProjects"></div>
-</section>
+                <textarea id="notes" placeholder="Notes"></textarea>
+                <input id="startedDate" type="date">
+                <button onclick="addProject()">Add project</button>
+                <p id="addProjectMessage" class="message"></p>
+            </div>
+        </section>
+    </div>
+</main>
 
 <script>
     const API_BASE = "https://adhd-hobby-api.onrender.com";
 
+    function safeText(value) {
+        return value ?? "";
+    }
+
     async function loadHobbies() {
+        const container = document.getElementById("hobbies");
+        container.innerHTML = "Loading hobbies...";
+
         const response = await fetch(`${API_BASE}/hobbies`);
         const hobbies = await response.json();
 
-        document.getElementById("hobbies").innerHTML = hobbies.map(hobby => `
+        container.innerHTML = hobbies.map(hobby => `
             <div class="card">
-                <strong>${hobby.name}</strong>
-                <div class="small">Category: ${hobby.category}</div>
-                <div class="small">Skill level: ${hobby.skillLevel}</div>
-                <div class="small">ID: ${hobby.id}</div>
+                <div class="card-title">${safeText(hobby.name)}</div>
+                <div class="meta">Category: ${safeText(hobby.category)}</div>
+                <div class="meta">Skill level: ${safeText(hobby.skillLevel)}</div>
+                <div class="meta">Hobby ID: ${hobby.id}</div>
             </div>
         `).join("");
     }
 
     async function loadProjects() {
+        const container = document.getElementById("projects");
+        container.innerHTML = "Loading projects...";
+
         const response = await fetch(`${API_BASE}/projects`);
         const projects = await response.json();
 
-        document.getElementById("projects").innerHTML = projects.map(project => `
+        container.innerHTML = projects.map(project => `
             <div class="card">
-                <strong>${project.projectName}</strong>
-                <div>Status: ${project.status}</div>
-                <div class="small">Started: ${project.startedDate}</div>
-                <div class="small">Notes: ${project.notes}</div>
-                <div class="small">Project ID: ${project.id}</div>
+                <div class="card-title">${safeText(project.projectName)}</div>
+                <span class="status">${safeText(project.status)}</span>
+                <div class="meta">Started: ${safeText(project.startedDate)}</div>
+                <div class="meta">Notes: ${safeText(project.notes)}</div>
+                <div class="meta">Project ID: ${project.id}</div>
 
-                <button onclick="updateStatus(${project.id}, 'Started')">Mark Started</button>
-                <button onclick="updateStatus(${project.id}, 'Finished')">Mark Finished</button>
-                <button onclick="updateStatus(${project.id}, 'Abandoned')">Mark Abandoned</button>
-                <button onclick="archiveProject(${project.id})">Archive</button>
+                <div class="actions">
+                    <button class="secondary" onclick="updateStatus(${project.id}, 'Started')">Started</button>
+                    <button class="secondary" onclick="updateStatus(${project.id}, 'Finished')">Finished</button>
+                    <button class="secondary" onclick="updateStatus(${project.id}, 'Abandoned')">Abandoned</button>
+                    <button class="danger" onclick="archiveProject(${project.id})">Archive</button>
+                </div>
             </div>
         `).join("");
     }
@@ -147,7 +319,11 @@
         });
 
         const result = await response.json();
-        document.getElementById("addProjectMessage").textContent = result.message;
+        document.getElementById("addProjectMessage").textContent = result.message || "Project added.";
+
+        document.getElementById("projectName").value = "";
+        document.getElementById("notes").value = "";
+        document.getElementById("startedDate").value = "";
 
         loadProjects();
     }
@@ -174,22 +350,26 @@
     }
 
     async function loadArchivedProjects() {
+        const container = document.getElementById("archivedProjects");
+        container.innerHTML = "Loading archived projects...";
+
         const response = await fetch(`${API_BASE}/projects/archived`);
         const projects = await response.json();
 
-        document.getElementById("archivedProjects").innerHTML = projects.map(project => `
+        container.innerHTML = projects.map(project => `
             <div class="card">
-                <strong>${project.projectName}</strong>
-                <div>Status: ${project.status}</div>
-                <div class="small">Started: ${project.startedDate}</div>
-                <div class="small">Deleted: ${project.deletedDate}</div>
-                <div class="small">Notes: ${project.notes}</div>
+                <div class="card-title">${safeText(project.projectName)}</div>
+                <span class="status">${safeText(project.status)}</span>
+                <div class="meta">Started: ${safeText(project.startedDate)}</div>
+                <div class="meta">Deleted: ${safeText(project.deletedDate)}</div>
+                <div class="meta">Notes: ${safeText(project.notes)}</div>
             </div>
         `).join("");
     }
 
     loadHobbies();
     loadProjects();
+    loadArchivedProjects();
 </script>
 
 </body>
