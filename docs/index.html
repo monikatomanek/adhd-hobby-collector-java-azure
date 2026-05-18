@@ -345,7 +345,7 @@
                     <option value="Abandoned">Abandoned</option>
                 </select>
 
-                <textarea id="notes" placeholder="Notes"></textarea>
+                <textarea id="notes" placeholder="Notes / description"></textarea>
                 <input id="startedDate" type="date">
                 <button onclick="addProject()">Add project</button>
                 <p id="addProjectMessage" class="message"></p>
@@ -375,12 +375,16 @@
         });
     }
 
+    function setAddMessage(message) {
+        document.getElementById("addProjectMessage").textContent = message;
+        setNotice(message);
+    }
+
     async function runAction(message, action) {
         try {
             setButtonsDisabled(true);
             setNotice(message);
             await action();
-            setNotice("Done.");
         } catch (error) {
             console.error(error);
             setNotice("Something went wrong. Open Console if the chaos continues.");
@@ -438,6 +442,7 @@
                 <div class="meta">Started: ${safeText(project.startedDate)}</div>
                 <div class="meta">Notes: ${safeText(project.notes)}</div>
                 <div class="meta">Project ID: ${project.id}</div>
+                <div class="meta">Hobby ID: ${project.hobbyId}</div>
 
                 <div class="actions">
                     <button class="started" onclick="updateStatus(${project.id}, 'Started')">Change to Started</button>
@@ -452,18 +457,36 @@
     async function addProject() {
         await runAction("Adding project...", async () => {
             const hobbyId = Number(document.getElementById("hobbySelect").value);
+            const projectName = document.getElementById("projectName").value.trim();
+            const notes = document.getElementById("notes").value.trim();
+            const startedDate = document.getElementById("startedDate").value;
 
             if (!hobbyId) {
-                document.getElementById("addProjectMessage").textContent = "Choose a hobby first.";
+                setAddMessage("Choose a hobby first.");
+                return;
+            }
+
+            if (!projectName) {
+                setAddMessage("Project name is required.");
+                return;
+            }
+
+            if (!notes) {
+                setAddMessage("Notes / description is required.");
+                return;
+            }
+
+            if (!startedDate) {
+                setAddMessage("Started date is required.");
                 return;
             }
 
             const project = {
                 hobbyId: hobbyId,
-                projectName: document.getElementById("projectName").value,
+                projectName: projectName,
                 status: document.getElementById("status").value,
-                notes: document.getElementById("notes").value,
-                startedDate: document.getElementById("startedDate").value
+                notes: notes,
+                startedDate: startedDate
             };
 
             const response = await fetch(`${API_BASE}/projects`, {
@@ -474,8 +497,19 @@
                 body: JSON.stringify(project)
             });
 
-            const result = await response.json();
-            document.getElementById("addProjectMessage").textContent = result.message || "Project added.";
+            let result = {};
+            try {
+                result = await response.json();
+            } catch (error) {
+                result = {};
+            }
+
+            if (!response.ok || result.rowsAdded === 0) {
+                setAddMessage("Project was not added. Check all fields.");
+                return;
+            }
+
+            setAddMessage(result.message || "Project added.");
 
             document.getElementById("projectName").value = "";
             document.getElementById("notes").value = "";
@@ -497,6 +531,7 @@
             });
 
             await loadProjects();
+            setNotice("Project status updated.");
         });
     }
 
@@ -515,6 +550,7 @@
 
             await loadProjects();
             await loadArchivedProjects();
+            setNotice("Project archived.");
         });
     }
 
