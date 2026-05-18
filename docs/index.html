@@ -22,6 +22,35 @@
             box-sizing: border-box;
         }
 
+        .sparkles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .sparkles span {
+            position: absolute;
+            left: var(--x);
+            top: var(--y);
+            color: rgba(124, 58, 237, 0.45);
+            font-size: 28px;
+            animation: twinkle 3s ease-in-out infinite;
+            animation-delay: var(--d);
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.15;
+                transform: scale(0.8) rotate(0deg);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.25) rotate(18deg);
+            }
+        }
+
         body {
             margin: 0;
             font-family: Inter, Arial, sans-serif;
@@ -30,6 +59,12 @@
                 radial-gradient(circle at top right, #ddd6fe 0, transparent 28%),
                 var(--bg);
             color: var(--text);
+        }
+
+        header,
+        main {
+            position: relative;
+            z-index: 1;
         }
 
         header {
@@ -192,6 +227,15 @@
     </style>
 </head>
 <body>
+
+<div class="sparkles">
+    <span style="--x: 8%; --y: 14%; --d: 0s;">✦</span>
+    <span style="--x: 20%; --y: 48%; --d: 1s;">✧</span>
+    <span style="--x: 82%; --y: 18%; --d: 0.5s;">✦</span>
+    <span style="--x: 72%; --y: 62%; --d: 1.4s;">✧</span>
+    <span style="--x: 94%; --y: 38%; --d: 0.2s;">✦</span>
+    <span style="--x: 42%; --y: 10%; --d: 1.8s;">✧</span>
+</div>
 
 <header>
     <h1>ADHD Hobby Collector</h1>
