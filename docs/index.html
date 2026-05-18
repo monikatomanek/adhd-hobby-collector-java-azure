@@ -174,41 +174,21 @@
         button.secondary {
             background: var(--pink-soft);
             color: var(--pink-text);
-            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.10);
-        }
-
-        button.secondary:hover {
-            background: #fbcfe8;
         }
 
         button.started {
             background: var(--gold-soft);
             color: var(--gold-text);
-            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.10);
-        }
-
-        button.started:hover {
-            background: #fde68a;
         }
 
         button.finished {
             background: var(--green-soft);
             color: var(--green-text);
-            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.10);
-        }
-
-        button.finished:hover {
-            background: #a7f3d0;
         }
 
         button.danger {
             background: var(--danger-soft);
             color: var(--danger-text);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.10);
-        }
-
-        button.danger:hover {
-            background: #fecaca;
         }
 
         input, select, textarea {
@@ -255,8 +235,8 @@
             margin: 8px 0;
             padding: 5px 10px;
             border-radius: 999px;
-            background: #ede9fe;
-            color: #5b21b6;
+            background: var(--accent-soft);
+            color: var(--accent-soft-text);
             font-size: 13px;
             font-weight: 800;
         }
@@ -353,7 +333,10 @@
             </div>
 
             <div class="form-grid">
-                <input id="hobbyId" type="number" placeholder="Hobby ID">
+                <select id="hobbySelect">
+                    <option value="">Loading hobbies...</option>
+                </select>
+
                 <input id="projectName" type="text" placeholder="Project name">
 
                 <select id="status">
@@ -406,12 +389,28 @@
         }
     }
 
+    async function fetchHobbies() {
+        const response = await fetch(`${API_BASE}/hobbies`);
+        return await response.json();
+    }
+
+    async function loadHobbyDropdown() {
+        const hobbySelect = document.getElementById("hobbySelect");
+        const hobbies = await fetchHobbies();
+
+        hobbySelect.innerHTML = `
+            <option value="">Choose a hobby</option>
+            ${hobbies.map(hobby => `
+                <option value="${hobby.id}">${safeText(hobby.name)}</option>
+            `).join("")}
+        `;
+    }
+
     async function loadHobbies() {
         const container = document.getElementById("hobbies");
         container.innerHTML = "Loading hobbies...";
 
-        const response = await fetch(`${API_BASE}/hobbies`);
-        const hobbies = await response.json();
+        const hobbies = await fetchHobbies();
 
         container.innerHTML = hobbies.map(hobby => `
             <div class="card">
@@ -421,6 +420,8 @@
                 <div class="meta">Hobby ID: ${hobby.id}</div>
             </div>
         `).join("");
+
+        await loadHobbyDropdown();
     }
 
     async function loadProjects() {
@@ -450,8 +451,15 @@
 
     async function addProject() {
         await runAction("Adding project...", async () => {
+            const hobbyId = Number(document.getElementById("hobbySelect").value);
+
+            if (!hobbyId) {
+                document.getElementById("addProjectMessage").textContent = "Choose a hobby first.";
+                return;
+            }
+
             const project = {
-                hobbyId: Number(document.getElementById("hobbyId").value),
+                hobbyId: hobbyId,
                 projectName: document.getElementById("projectName").value,
                 status: document.getElementById("status").value,
                 notes: document.getElementById("notes").value,
@@ -472,6 +480,7 @@
             document.getElementById("projectName").value = "";
             document.getElementById("notes").value = "";
             document.getElementById("startedDate").value = "";
+            document.getElementById("hobbySelect").value = "";
 
             await loadProjects();
         });
