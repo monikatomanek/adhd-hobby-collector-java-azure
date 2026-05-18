@@ -13,7 +13,19 @@
             --muted: #697386;
             --accent: #7c3aed;
             --accent-dark: #5b21b6;
-            --danger: #dc2626;
+            --accent-soft: #ede9fe;
+            --accent-soft-text: #5b21b6;
+            --pink: #db2777;
+            --pink-soft: #fce7f3;
+            --pink-text: #9d174d;
+            --gold: #d97706;
+            --gold-soft: #fef3c7;
+            --gold-text: #92400e;
+            --green: #059669;
+            --green-soft: #d1fae5;
+            --green-text: #065f46;
+            --danger-soft: #fee2e2;
+            --danger-text: #b91c1c;
             --border: #eadfd0;
             --shadow: 0 18px 45px rgba(44, 34, 23, 0.12);
         }
@@ -132,24 +144,57 @@
             border: none;
             border-radius: 999px;
             padding: 10px 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            color: white;
-            background: var(--accent);
+            color: var(--accent-soft-text);
+            background: var(--accent-soft);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
             transition: 0.18s ease;
         }
 
         button:hover {
-            background: var(--accent-dark);
+            background: #ddd6fe;
             transform: translateY(-1px);
         }
 
         button.secondary {
-            background: #111827;
+            background: var(--pink-soft);
+            color: var(--pink-text);
+            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.10);
+        }
+
+        button.secondary:hover {
+            background: #fbcfe8;
+        }
+
+        button.started {
+            background: var(--gold-soft);
+            color: var(--gold-text);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.10);
+        }
+
+        button.started:hover {
+            background: #fde68a;
+        }
+
+        button.finished {
+            background: var(--green-soft);
+            color: var(--green-text);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.10);
+        }
+
+        button.finished:hover {
+            background: #a7f3d0;
         }
 
         button.danger {
-            background: var(--danger);
+            background: var(--danger-soft);
+            color: var(--danger-text);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.10);
+        }
+
+        button.danger:hover {
+            background: #fecaca;
         }
 
         input, select, textarea {
@@ -200,6 +245,21 @@
             color: #5b21b6;
             font-size: 13px;
             font-weight: 800;
+        }
+
+        .status.Started {
+            background: var(--gold-soft);
+            color: var(--gold-text);
+        }
+
+        .status.Finished {
+            background: var(--green-soft);
+            color: var(--green-text);
+        }
+
+        .status.Abandoned {
+            background: var(--pink-soft);
+            color: var(--pink-text);
         }
 
         .actions {
@@ -303,6 +363,10 @@
         return value ?? "";
     }
 
+    function statusClass(status) {
+        return safeText(status).replace(/\s+/g, "");
+    }
+
     async function loadHobbies() {
         const container = document.getElementById("hobbies");
         container.innerHTML = "Loading hobbies...";
@@ -330,14 +394,14 @@
         container.innerHTML = projects.map(project => `
             <div class="card">
                 <div class="card-title">${safeText(project.projectName)}</div>
-                <span class="status">${safeText(project.status)}</span>
+                <span class="status ${statusClass(project.status)}">${safeText(project.status)}</span>
                 <div class="meta">Started: ${safeText(project.startedDate)}</div>
                 <div class="meta">Notes: ${safeText(project.notes)}</div>
                 <div class="meta">Project ID: ${project.id}</div>
 
                 <div class="actions">
-                    <button class="secondary" onclick="updateStatus(${project.id}, 'Started')">Started</button>
-                    <button class="secondary" onclick="updateStatus(${project.id}, 'Finished')">Finished</button>
+                    <button class="started" onclick="updateStatus(${project.id}, 'Started')">Started</button>
+                    <button class="finished" onclick="updateStatus(${project.id}, 'Finished')">Finished</button>
                     <button class="secondary" onclick="updateStatus(${project.id}, 'Abandoned')">Abandoned</button>
                     <button class="danger" onclick="archiveProject(${project.id})">Archive</button>
                 </div>
@@ -403,7 +467,7 @@
         container.innerHTML = projects.map(project => `
             <div class="card">
                 <div class="card-title">${safeText(project.projectName)}</div>
-                <span class="status">${safeText(project.status)}</span>
+                <span class="status ${statusClass(project.status)}">${safeText(project.status)}</span>
                 <div class="meta">Started: ${safeText(project.startedDate)}</div>
                 <div class="meta">Deleted: ${safeText(project.deletedDate)}</div>
                 <div class="meta">Notes: ${safeText(project.notes)}</div>
