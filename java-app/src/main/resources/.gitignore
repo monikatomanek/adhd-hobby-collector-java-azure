@@ -1,5 +1,4 @@
-target/
-.env
-*.log
-src/main/resources/application-local.properties
-src/main/resources/application-azure.properties
+application-local.properties
+application-azure.properties
+application-render.properties
+application-render.example.properties
